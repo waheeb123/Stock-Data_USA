@@ -1,0 +1,230 @@
+---
+title: " 20-Year Trend Analysis of Top 10 US Companies by Market Cap"
+author: "waheeb Algabri"
+output:
+  html_document:
+    highlight: pygments
+    theme: cerulean
+    toc: true
+    toc_float: true
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(eval = TRUE, message = FALSE, warning = FALSE)
+library(tidyverse)
+library(openintro)
+```
+
+
+
+
+### Introduction:
+
+The stock market is one of the most important indicators of a country's economic health. Understanding the trends in the stock market is crucial for investors, analysts, and economists alike. In this project, we aim to analyze 20 years of end-of-day stock data for the top 10 US companies by market cap.
+
+### Research question 
+
+What are the trends, comparisons, and predictions for the end-of-day stock data of the top 10 US companies by market cap over the past 20 years?
+
+### Methodology
+
+1. Data Collection: We will collect the end-of-day stock data for the top 10 US companies by market cap for the past 20 years.
+2. Data Cleaning: We will clean and preprocess the data to ensure that it is ready for analysis.
+3. Data Analysis: We will perform various types of analysis on the data, including trend analysis, comparison of performance, and prediction of future trends.
+4. Data Visualization: We will create various visualizations to represent the insights gained from the analysis.
+
+
+### Conclusion
+
+We will summarize the insights gained from the analysis and provide recommendations for future investments.
+Tools and Technologies:
+The following tools and technologies will be used for this project:
+1. R programming language
+2. Data analysis packages such as dplyr, tidyr, and ggplot2
+3. Data visualization packages such as ggplot2
+4. Predictive modeling techniques such as linear regression and time series analysis
+
+
+Deliverables:
+
+
+The deliverables of this project will include
+1. A report detailing the insights gained from the analysis
+2. Visualizations representing the insights gained from the analysis
+3. R code used for the analysis
+
+
+--------------------------------------
+
+### Data Preparation
+
+
+```{r}
+# Load data into R
+data <- read.csv("daily_adjusted_AMZN.csv")
+```
+
+
+```{r}
+# Check the structure of the data
+str(data)
+
+```
+
+
+
+```{r}
+# Check for missing values
+sum(is.na(data$timestamp))
+sum(is.na(data$adjusted_close))
+
+# Check for infinite values
+sum(!is.finite(data$timestamp))
+sum(!is.finite(data$adjusted_close))
+
+```
+
+
+```{r eval=FALSE}
+# Remove missing values there is no need for it now 
+# Remove missing values
+data <- na.omit(data)
+
+```
+
+
+we gonna check if there is missing value, if yes then work on it 
+
+```{r}
+# Impute missing values using forward filling
+data_impute <- data
+for (col in colnames(data_impute)) {
+  if (sum(is.na(data_impute[col])) > 0) {
+    data_impute[is.na(data_impute[col]), col] <- na.locf(data_impute[!is.na(data_impute[col]), col])
+  }
+}
+
+```
+
+
+```{r}
+summary(data)
+```
+
+
+
+
+```{r}
+
+
+# Calculate the standard deviation of adjusted_close, volume, and split_coefficient
+sd_adjusted_close <- sd(data$adjusted_close)
+sd_volume <- sd(data$volume)
+sd_split_coefficient <- sd(data$split_coefficient)
+
+# Print the results
+cat("Standard deviation of adjusted_close:", sd_adjusted_close, "\n")
+cat("Standard deviation of volume:", sd_volume, "\n")
+cat("Standard deviation of split_coefficient:", sd_split_coefficient, "\n")
+
+```
+
+
+The standard deviation is a measure of the spread of the data around the mean. In the case of "adjusted_close", the standard deviation of 634.5627 indicates that the adjusted closing prices of the stocks tend to vary by around 634.5627 dollars from the mean value.
+
+For "volume", the standard deviation of 5097986 indicates that the number of shares traded for the stocks tend to vary by around 5097986 shares from the mean value.
+
+For "split_coefficient", the standard deviation of 0 indicates that all the values in the column are the same, meaning that there have been no stock splits in the data set.
+
+
+#### Data Analaizing
+
+##### Trend analysis
+
+To understand the overall trend of the "adjusted_close" column
+
+```{r}
+# convert the "timestamp" column to a Date object in R
+data$timestamp <- as.Date(data$timestamp, format = "%Y-%m-%d")
+
+# then plot the timestamp and adjusted close
+plot(data$timestamp, data$adjusted_close, type = "l", xlab = "Timestamp", ylab = "Adjusted Close")
+
+
+```
+
+```{r}
+summary(data$adjusted_close)
+```
+
+
+To analyze the trend in the "volume" column
+
+```{r}
+barplot(data$volume, xlab = "Timestamp", ylab = "Volume")
+
+```
+
+```{r}
+summary(data$volume)
+```
+
+
+###### Comparison of performance
+
+To compare the performance of "adjusted_close" between two stocks
+
+```{r}
+plot(data$adjusted_close, data$adjusted_close, xlab = "data1 adjusted_close", ylab = "data2 adjusted_close", main = "Comparison of Performance")
+
+```
+
+```{r}
+summary(data$adjusted_close)
+```
+
+
+###### Prediction of future trends
+
+To predict the future trend of "adjusted_close", using time series analysis techniques.
+
+```{r}
+library(forecast)
+fit <- auto.arima(data$adjusted_close)
+future_trend <- forecast(fit, h = 12)
+plot(future_trend)
+
+```
+
+
+Based on the line in the forecasts from Arima of adjusted_close, it appears that the trend is slowly increasing. This suggests that the future trend of adjusted_close is likely to be upward and that it will continue to increase over time, although at a potentially slow pace.
+
+
+```{r}
+summary(data$adjusted_close)
+```
+
+
+
+###### Data visualization
+creating a visualizations that represent the insights gained from the analysis
+
+
+```{r}
+library(ggplot2)
+ggplot(data, aes(x = timestamp, y = adjusted_close)) +
+  geom_line() +
+  labs(x = "Timestamp", y = "Adjusted Close") +
+  ggtitle("Adjusted Close Trend")
+
+```
+
+
+# conclistion
+
+The conclusion based on the provided information is that the adjusted closing prices of the stocks in the data set tend to vary by around 634.5627 dollars from the mean value, with a standard deviation of 634.5627. The number of shares traded for the stocks tend to vary by around 5097986 shares from the mean value, with a standard deviation of 5097986. The trend in the adjusted closing prices of the stocks shows an upward trend over time. A time series analysis technique was used to predict the future trend of adjusted_close and the results were visualized using a line plot
+
+

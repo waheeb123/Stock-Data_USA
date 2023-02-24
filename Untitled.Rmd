@@ -2,12 +2,12 @@
 title: " 20-Year Trend Analysis of Top 10 US Companies by Market Cap"
 author: "waheeb Algabri"
 output:
+  pdf_document: default
   html_document:
     highlight: pygments
     theme: cerulean
     toc: true
     toc_float: true
-  pdf_document: default
 editor_options: 
   chunk_output_type: console
 ---
